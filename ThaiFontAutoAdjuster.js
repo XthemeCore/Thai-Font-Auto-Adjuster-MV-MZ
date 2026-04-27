@@ -44,7 +44,7 @@
  * @param enableLineHeight
  * @parent ======== Common ========
  * @text Enable Line Height
- * @desc เปิดใช้การแก้ไข Line Height หรือไม่
+ * @desc เปิดใช้การแก้ไขความสูงบรรทัดของข้อความหรือไม่
  * @type boolean
  * @on Enabled
  * @off Disabled
@@ -53,7 +53,7 @@
  * @param lineHeight
  * @parent ======== Common ========
  * @text Line Height
- * @desc ความสูงของกล่องข้อความ
+ * @desc ความสูงของบรรทัด
  * @type number
  * @default 42
  * 
