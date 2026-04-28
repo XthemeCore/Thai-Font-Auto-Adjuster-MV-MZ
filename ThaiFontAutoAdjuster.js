@@ -39,7 +39,7 @@
  * @text Font Bitmap Y Offset
  * @desc ระยะพิกเซลของตัวอักษรที่ต้องการขยายออกไป (เช่นภาษาไทยที่มีวรรณยุกต์เหนือสระ)
  * @type number
- * @default 6
+ * @default 0
  * 
  * @param enableLineHeight
  * @parent ======== Common ========
@@ -55,7 +55,7 @@
  * @text Line Height
  * @desc ความสูงของบรรทัด
  * @type number
- * @default 42
+ * @default 36
  * 
  * @help ThaiFontAutoAdjuster.js
  *
@@ -98,7 +98,7 @@
 
     const XTC_Bitmap_drawText = Bitmap.prototype.drawText;
     Bitmap.prototype.drawText = function (text, x, y, maxWidth, lineHeight, align) {
-        y += parseInt(XTC.pixelYOffset || 6, 10);
+        y += parseInt(XTC.pixelYOffset || 0, 10);
         XTC_Bitmap_drawText.call(this, text, x, y, maxWidth, lineHeight, align);
     };
 
@@ -106,7 +106,7 @@
     Window_Base.prototype.lineHeight = function() {
         if (XTC.enableLineHeight)
         {
-            return parseInt(XTC.lineHeight || 42, 10);
+            return parseInt(XTC.lineHeight || 36, 10);
         }
         else
         {
