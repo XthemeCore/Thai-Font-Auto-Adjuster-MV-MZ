@@ -72,7 +72,6 @@
 
     const XTC_Window_Base_processCharacter = Window_Base.prototype.processCharacter;
     Window_Base.prototype.processCharacter = function (textState) {
-        console.trace(textState);
         if(textState)
         {
             let index = textState.index;
