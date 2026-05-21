@@ -5,7 +5,8 @@
  * @target MV
  * @target MZ
  * @plugindesc ปรับตัวอักษรภาษาไทยไปตามยถากรรม
- * License: MIT License
+ * @license: MIT License
+ *  
  * =============================================================================
  * MIT License
  *
@@ -39,7 +40,7 @@
  * @text Font Bitmap Y Offset
  * @desc ระยะพิกเซลของตัวอักษรที่ต้องการขยายออกไป (เช่นภาษาไทยที่มีวรรณยุกต์เหนือสระ)
  * @type number
- * @default 0
+ * @default 4
  * 
  * @param enableLineHeight
  * @parent ======== Common ========
@@ -48,7 +49,7 @@
  * @type boolean
  * @on Enabled
  * @off Disabled
- * @default true
+ * @default false
  *
  * @param lineHeight
  * @parent ======== Common ========
@@ -97,8 +98,22 @@
 
     const XTC_Bitmap_drawText = Bitmap.prototype.drawText;
     Bitmap.prototype.drawText = function (text, x, y, maxWidth, lineHeight, align) {
-        y += parseInt(XTC.pixelYOffset || 0, 10);
-        XTC_Bitmap_drawText.call(this, text, x, y, maxWidth, lineHeight, align);
+        const pixelYOffset = parseInt(XTC.pixelYOffset || 0, 10);
+        const adjustedLineHeight = lineHeight + pixelYOffset;
+        const adjustedY = y - (pixelYOffset / 2);
+        XTC_Bitmap_drawText.call(this, text, x, adjustedY, maxWidth, adjustedLineHeight, align);
+    };
+
+    const XTC_Window_Message_newPage = Window_Message.prototype.newPage;
+    Window_Message.prototype.newPage = function(textState) {
+        XTC_Window_Message_newPage.call(this, textState);
+        textState.y += parseInt(XTC.pixelYOffset || 0, 10) + 1;
+    }
+
+    const XTC_Window_Base_calcTextHeight = Window_Base.prototype.calcTextHeight;
+    Window_Base.prototype.calcTextHeight = function(textState, all) {
+        const height = XTC_Window_Base_calcTextHeight.call(this, textState, all);
+        return height + parseInt(XTC.pixelYOffset || 0, 10) + 1;
     };
 
     const XTC_Window_Base_lineHeight = Window_Base.prototype.lineHeight;
@@ -112,5 +127,4 @@
             return XTC_Window_Base_lineHeight.call(this);
         }
     };
-
 })();
