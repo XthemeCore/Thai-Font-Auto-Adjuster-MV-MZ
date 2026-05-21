@@ -104,6 +104,21 @@
         XTC_Bitmap_drawText.call(this, text, x, adjustedY, maxWidth, adjustedLineHeight, align);
     };
 
+    const XTC_Window_Selectable_itemRectForText = Window_Selectable.prototype.itemRectForText;
+    Window_Selectable.prototype.itemRectForText = function(index) {
+        var rect = XTC_Window_Selectable_itemRectForText.call(this, index);
+        rect.y -= (parseInt(XTC.pixelYOffset || 4, 10)/2);
+        return rect;
+    };
+
+    const XTC_Window_Base_processDrawIcon = Window_Base.prototype.processDrawIcon;
+    Window_Base.prototype.processDrawIcon = function(iconIndex, textState) {
+        var offsetY = Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2);
+        textState.y += offsetY;
+        XTC_Window_Base_processDrawIcon.call(this, iconIndex, textState);
+        textState.y -= offsetY;
+    };
+
     const XTC_Window_Message_newPage = Window_Message.prototype.newPage;
     Window_Message.prototype.newPage = function(textState) {
         XTC_Window_Message_newPage.call(this, textState);
