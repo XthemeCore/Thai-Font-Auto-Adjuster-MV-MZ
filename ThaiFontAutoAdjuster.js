@@ -105,9 +105,9 @@
     };
 
     Window_Command.prototype.drawItem = function(index) {
-        var rect = this.itemRectForText(index);
-        var align = this.itemTextAlign();
-        var offsetY = Math.max(0, Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2) - 1);
+        let rect = this.itemRectForText(index);
+        let align = this.itemTextAlign();
+        let offsetY = Math.max(0, Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2) - 1);
 
         this.resetTextColor();
         this.changePaintOpacity(this.isCommandEnabled(index));
