@@ -137,6 +137,9 @@
     const XTC_Window_Base_calcTextHeight = Window_Base.prototype.calcTextHeight;
     Window_Base.prototype.calcTextHeight = function(textState, all) {
         const height = XTC_Window_Base_calcTextHeight.call(this, textState, all);
+        if (this instanceof Window_Help) {
+            return height;
+        }
         return height + parseInt(XTC.pixelYOffset || 4, 10) + 1;
     };
 
