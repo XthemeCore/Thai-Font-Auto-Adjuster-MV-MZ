@@ -98,7 +98,7 @@
 
     const XTC_Bitmap_drawText = Bitmap.prototype.drawText;
     Bitmap.prototype.drawText = function (text, x, y, maxWidth, lineHeight, align) {
-        const pixelYOffset = parseInt(XTC.pixelYOffset || 0, 10);
+        const pixelYOffset = parseInt(XTC.pixelYOffset || 4, 10);
         const adjustedLineHeight = lineHeight + pixelYOffset;
         const adjustedY = y - (pixelYOffset / 2);
         XTC_Bitmap_drawText.call(this, text, x, adjustedY, maxWidth, adjustedLineHeight, align);
@@ -107,13 +107,13 @@
     const XTC_Window_Message_newPage = Window_Message.prototype.newPage;
     Window_Message.prototype.newPage = function(textState) {
         XTC_Window_Message_newPage.call(this, textState);
-        textState.y += parseInt(XTC.pixelYOffset || 0, 10) + 1;
+        textState.y += parseInt(XTC.pixelYOffset || 4, 10) + 1;
     }
 
     const XTC_Window_Base_calcTextHeight = Window_Base.prototype.calcTextHeight;
     Window_Base.prototype.calcTextHeight = function(textState, all) {
         const height = XTC_Window_Base_calcTextHeight.call(this, textState, all);
-        return height + parseInt(XTC.pixelYOffset || 0, 10) + 1;
+        return height + parseInt(XTC.pixelYOffset || 4, 10) + 1;
     };
 
     const XTC_Window_Base_lineHeight = Window_Base.prototype.lineHeight;
