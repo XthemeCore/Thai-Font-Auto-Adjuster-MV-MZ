@@ -129,7 +129,7 @@
     const XTC_Window_Message_windowHeight = Window_Message.prototype.windowHeight;
     Window_Message.prototype.windowHeight = function() {
         const extra = parseInt(XTC.pixelYOffset || 4, 10) + 1;
-        return XTC_Window_Message_windowHeight.call(this) + extra * 5;
+        return XTC_Window_Message_windowHeight.call(this) + extra * (this.numVisibleRows() + 1);
     };
 
     const XTC_Window_Base_calcTextHeight = Window_Base.prototype.calcTextHeight;
