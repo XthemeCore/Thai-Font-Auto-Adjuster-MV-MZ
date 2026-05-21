@@ -106,14 +106,15 @@
 
     const XTC_Window_Selectable_itemRectForText = Window_Selectable.prototype.itemRectForText;
     Window_Selectable.prototype.itemRectForText = function(index) {
-        var rect = XTC_Window_Selectable_itemRectForText.call(this, index);
-        rect.y -= (parseInt(XTC.pixelYOffset || 4, 10)/2);
+        let rect = XTC_Window_Selectable_itemRectForText.call(this, index);
+        let offsetY = Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2);
+        rect.y -= Math.max(0, offsetY - 1);
         return rect;
     };
 
     const XTC_Window_Base_processDrawIcon = Window_Base.prototype.processDrawIcon;
     Window_Base.prototype.processDrawIcon = function(iconIndex, textState) {
-        var offsetY = Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2);
+        let offsetY = Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2);
         textState.y += offsetY;
         XTC_Window_Base_processDrawIcon.call(this, iconIndex, textState);
         textState.y -= offsetY;
@@ -124,6 +125,12 @@
         XTC_Window_Message_newPage.call(this, textState);
         textState.y += parseInt(XTC.pixelYOffset || 4, 10) + 1;
     }
+
+    const XTC_Window_Message_windowHeight = Window_Message.prototype.windowHeight;
+    Window_Message.prototype.windowHeight = function() {
+        const extra = parseInt(XTC.pixelYOffset || 4, 10) + 1;
+        return XTC_Window_Message_windowHeight.call(this) + extra * 5;
+    };
 
     const XTC_Window_Base_calcTextHeight = Window_Base.prototype.calcTextHeight;
     Window_Base.prototype.calcTextHeight = function(textState, all) {
