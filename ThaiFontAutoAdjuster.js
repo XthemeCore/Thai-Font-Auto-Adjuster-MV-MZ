@@ -104,12 +104,14 @@
         XTC_Bitmap_drawText.call(this, text, x, adjustedY, maxWidth, adjustedLineHeight, align);
     };
 
-    const XTC_Window_Selectable_itemRectForText = Window_Selectable.prototype.itemRectForText;
-    Window_Selectable.prototype.itemRectForText = function(index) {
-        let rect = XTC_Window_Selectable_itemRectForText.call(this, index);
-        let offsetY = Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2);
-        rect.y -= Math.max(0, offsetY - 1);
-        return rect;
+    Window_Command.prototype.drawItem = function(index) {
+        var rect = this.itemRectForText(index);
+        var align = this.itemTextAlign();
+        var offsetY = Math.max(0, Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2) - 1);
+
+        this.resetTextColor();
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawTextEx(this.commandName(index), rect.x, rect.y - offsetY, rect.width, align); // Support Icon Drawing in Command
     };
 
     const XTC_Window_Base_processDrawIcon = Window_Base.prototype.processDrawIcon;
