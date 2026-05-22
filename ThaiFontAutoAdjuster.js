@@ -96,62 +96,82 @@
         }
     };
 
+    function XTC_pixelYOffset() {
+        return parseInt(XTC.pixelYOffset || 4, 10);
+    }
+
+    function XTC_messageExtraTop() {
+        var pixelYOffset = XTC_pixelYOffset();
+        return Math.max(0, pixelYOffset + Math.ceil(pixelYOffset / 2) + 2);
+    }
+
     const XTC_Bitmap_drawText = Bitmap.prototype.drawText;
     Bitmap.prototype.drawText = function (text, x, y, maxWidth, lineHeight, align) {
-        const pixelYOffset = parseInt(XTC.pixelYOffset || 4, 10);
+        const pixelYOffset = XTC_pixelYOffset();
         const adjustedLineHeight = lineHeight + pixelYOffset;
         const adjustedY = y - (pixelYOffset / 2);
         XTC_Bitmap_drawText.call(this, text, x, adjustedY, maxWidth, adjustedLineHeight, align);
     };
 
     Window_Command.prototype.drawItem = function(index) {
-        let rect = this.itemRectForText(index);
-        let align = this.itemTextAlign();
-        let offsetY = Math.max(0, Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2) - 1);
+        var rect = this.itemRectForText(index);
+        var align = this.itemTextAlign();
 
         this.resetTextColor();
         this.changePaintOpacity(this.isCommandEnabled(index));
-        this.drawTextEx(this.commandName(index), rect.x, rect.y - offsetY, rect.width, align); // Support Icon Drawing in Command
+        this.drawTextEx(this.commandName(index), rect.x, rect.y, rect.width, align); // Support icon drawing in commands
     };
+
+    if (typeof Imported !== "undefined" && Imported.YEP_CommonEventMenu) {
+        Window_CommonEventMenu.prototype.drawItem = function(index) {
+            var rect = this.itemRectForText(index);
+            this.resetFontSettings();
+            this.changePaintOpacity(this.isCommandEnabled(index));
+            this.resetTextColor();
+            this.drawTextEx(this.commandName(index), rect.x, rect.y);
+        };
+    }
 
     const XTC_Window_Base_processDrawIcon = Window_Base.prototype.processDrawIcon;
     Window_Base.prototype.processDrawIcon = function(iconIndex, textState) {
-        let offsetY = Math.floor(parseInt(XTC.pixelYOffset || 4, 10) / 2);
+        var offsetY = Math.floor(XTC_pixelYOffset() / 2);
+        if (this instanceof Window_Command) {
+            offsetY = 0;
+        }
         textState.y += offsetY;
         XTC_Window_Base_processDrawIcon.call(this, iconIndex, textState);
         textState.y -= offsetY;
     };
 
-    const XTC_Window_Message_newPage = Window_Message.prototype.newPage;
     Window_Message.prototype.newPage = function(textState) {
-        XTC_Window_Message_newPage.call(this, textState);
-        textState.y += parseInt(XTC.pixelYOffset || 4, 10) + 1;
-    }
+        const extraTop = XTC_messageExtraTop();
+        this.contents.clear();
+        this.resetFontSettings();
+        this.clearFlags();
+        this.loadMessageFace();
+        textState.x = this.newLineX();
+        textState.y = extraTop;
+        textState.left = this.newLineX();
+        textState.height = this.calcTextHeight(textState, false);
+    };
 
     const XTC_Window_Message_windowHeight = Window_Message.prototype.windowHeight;
     Window_Message.prototype.windowHeight = function() {
-        const extra = parseInt(XTC.pixelYOffset || 4, 10) + 1;
-        return XTC_Window_Message_windowHeight.call(this) + extra * (this.numVisibleRows() + 1);
+        return XTC_Window_Message_windowHeight.call(this) + XTC_messageExtraTop();
     };
 
-    const XTC_Window_Base_calcTextHeight = Window_Base.prototype.calcTextHeight;
-    Window_Base.prototype.calcTextHeight = function(textState, all) {
-        const height = XTC_Window_Base_calcTextHeight.call(this, textState, all);
-        if (this instanceof Window_Help) {
-            return height;
-        }
-        return height + parseInt(XTC.pixelYOffset || 4, 10) + 1;
-    };
+    if (typeof Window_NameBox !== "undefined") {
+        const XTC_Window_NameBox_windowHeight = Window_NameBox.prototype.windowHeight;
+        Window_NameBox.prototype.windowHeight = function() {
+            return XTC_Window_NameBox_windowHeight.call(this) + Math.max(0, Math.ceil(XTC_pixelYOffset() / 2));
+        };
+    }
 
     const XTC_Window_Base_lineHeight = Window_Base.prototype.lineHeight;
     Window_Base.prototype.lineHeight = function() {
-        if (XTC.enableLineHeight)
-        {
+        if (String(XTC.enableLineHeight).toLowerCase() === "true") {
             return parseInt(XTC.lineHeight || 36, 10);
         }
-        else
-        {
-            return XTC_Window_Base_lineHeight.call(this);
-        }
+        return XTC_Window_Base_lineHeight.call(this);
     };
 })();
