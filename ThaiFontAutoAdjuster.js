@@ -135,7 +135,7 @@
     const XTC_Window_Base_processDrawIcon = Window_Base.prototype.processDrawIcon;
     Window_Base.prototype.processDrawIcon = function(iconIndex, textState) {
         var offsetY = Math.floor(XTC_pixelYOffset() / 2);
-        if (this instanceof Window_Command) {
+        if (this instanceof Window_Command || this instanceof Window_Message) {
             offsetY = 0;
         }
         textState.y += offsetY;
