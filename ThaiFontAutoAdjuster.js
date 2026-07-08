@@ -5,7 +5,7 @@
  * @target MV
  * @target MZ
  * @plugindesc ปรับตัวอักษรภาษาไทยไปตามยถากรรม
- * @license: MIT License
+ * @license MIT License
  *  
  * =============================================================================
  * MIT License
@@ -70,6 +70,7 @@
     Utils.containsThaiSpecialCharacters = function (character) {
         return /[ำิีึืัํ่้๊๋์ฺุู็ๅ]/.test(character);
     };
+    const isMZ = (typeof Utils !== 'undefined' && Utils.RPGMAKER_NAME === 'MZ');
 
     const XTC_Window_Base_processCharacter = Window_Base.prototype.processCharacter;
     Window_Base.prototype.processCharacter = function (textState) {
@@ -101,7 +102,7 @@
     }
 
     function XTC_messageExtraTop() {
-        var pixelYOffset = XTC_pixelYOffset();
+        let pixelYOffset = XTC_pixelYOffset();
         return Math.max(0, pixelYOffset + Math.ceil(pixelYOffset / 2) + 2);
     }
 
@@ -114,8 +115,16 @@
     };
 
     Window_Command.prototype.drawItem = function(index) {
-        var rect = this.itemRectForText(index);
-        var align = this.itemTextAlign();
+        let rect;
+        if (isMZ) 
+        {
+            rect = this.itemLineRect(index);
+        }
+        else
+        {
+            rect = this.itemRectForText(index);
+        }
+        let align = this.itemTextAlign();
 
         this.resetTextColor();
         this.changePaintOpacity(this.isCommandEnabled(index));
@@ -124,7 +133,16 @@
 
     if (typeof Imported !== "undefined" && Imported.YEP_CommonEventMenu) {
         Window_CommonEventMenu.prototype.drawItem = function(index) {
-            var rect = this.itemRectForText(index);
+            let rect;
+            if (isMZ) 
+            {
+                rect = this.itemLineRect(index);
+            }
+            else
+            {
+                rect = this.itemRectForText(index);
+            }
+
             this.resetFontSettings();
             this.changePaintOpacity(this.isCommandEnabled(index));
             this.resetTextColor();
@@ -134,7 +152,7 @@
 
     const XTC_Window_Base_processDrawIcon = Window_Base.prototype.processDrawIcon;
     Window_Base.prototype.processDrawIcon = function(iconIndex, textState) {
-        var offsetY = Math.floor(XTC_pixelYOffset() / 2);
+        let offsetY = Math.floor(XTC_pixelYOffset() / 2);
         if (this instanceof Window_Command || this instanceof Window_Message) {
             offsetY = 0;
         }
@@ -143,15 +161,24 @@
         textState.y -= offsetY;
     };
 
+    Window_Message.prototype.getNewLineX = function(textState) 
+    {
+        if (isMZ) {
+            return this.newLineX(textState);
+        } else {
+            return this.newLineX();
+        }
+    }
+
     Window_Message.prototype.newPage = function(textState) {
         const extraTop = XTC_messageExtraTop();
         this.contents.clear();
         this.resetFontSettings();
         this.clearFlags();
         this.loadMessageFace();
-        textState.x = this.newLineX();
+        textState.x = this.getNewLineX(textState);
         textState.y = extraTop;
-        textState.left = this.newLineX();
+        textState.left = this.getNewLineX(textState);
         textState.height = this.calcTextHeight(textState, false);
     };
 
